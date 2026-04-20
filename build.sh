@@ -12,9 +12,11 @@ mkdir -p "$BIN_DIR"
 echo "> Running tests..."
 go test -v ./...
 
-echo ""> Building $APP_NAME..."
+echo
+echo "> Building $APP_NAME..."
 go build -o "$OUTPUT" "$MAIN_PATH"
 
+echo
 echo "> Execution started: $OUTPUT"
 "./$OUTPUT"
 
