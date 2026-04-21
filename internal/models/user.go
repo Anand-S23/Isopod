@@ -6,12 +6,11 @@ import (
 	"github.com/google/uuid"
 )
 	
-type NewUserDto struct {
-	GitHubID    int64  `json:"github_id"`
-	Username    string `json:"username"`
+type GHUserDto struct {
+	ID          int64  `json:"id"`
+	Login       string `json:"login"`
 	Email       string `json:"email"`
 	AvatarURL   string `json:"avatar_url"`
-	AccessToken string `json:"access_token"`
 }
 
 type User struct {
@@ -25,11 +24,11 @@ type User struct {
     LastLoginAt time.Time `json:"last_login"`
 }
 
-func NewUser(dto NewUserDto, encryptionKey []byte) User {
+func NewUser(dto GHUserDto, encryptionKey []byte) User {
 	return User{
 		ID:          uuid.New().String(),
-		GitHubID:    dto.GitHubID,
-		Username:    dto.Username,
+		GitHubID:    dto.ID,
+		Username:    dto.Login,
 		Email:       dto.Email,
 		AvatarURL:   dto.AvatarURL,
 		AccessToken: crypt.Encrypt(dto.AccessToken, encryptionKey),

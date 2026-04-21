@@ -13,6 +13,7 @@ type EnvVars struct {
 	DB_URI         string
 	ALLOWED_ORIGIN string
 	ENCRYPTION_KEY []byte
+	CSRF_TOKEN     string
 }
 
 func LoadEnv() (EnvVars, error) {
@@ -24,6 +25,7 @@ func LoadEnv() (EnvVars, error) {
 		DB_URI:         GetEnvOrPanic("DB_URI"),
 		ALLOWED_ORIGIN: GetEnvOrPanic("ALLOWED_ORIGIN"),
 		ENCRYPTION_KEY: []byte(GetEnvOrPanic("ENCRYPTION_KEY")),
+		CSRF_TOKEN:     GetEnvOrPanic("CSRF_TOKEN"),
 	}, nil
 }
 

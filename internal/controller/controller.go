@@ -11,6 +11,7 @@ type Controller struct {
     Production   bool
     GithubOauth  oauth2.Config
     BaseURL      string
+    CSRFToken    string
 }
 
 func NewController(
@@ -18,7 +19,8 @@ func NewController(
     production bool, 
     baseURL string, 
     githubClientID string, 
-    githubClientSecret string
+    githubClientSecret string,
+    csrfToken string,
 ) *Controller {
     githubOauthConfig := config.NewGithubOauthConfig(
         fmt.Sprintf("%s/auth/callback", baseURL),
@@ -31,6 +33,7 @@ func NewController(
         Production: production,
         GithubOauth: githubOauthConfig,
         BaseURL: baseURL,
+        CSRFToken: csrfToken,
     }
 }
 
