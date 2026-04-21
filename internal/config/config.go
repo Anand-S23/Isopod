@@ -21,7 +21,7 @@ func LoadEnv() (*EnvVars, error) {
 		PRODUCTION:     envMode == "production",
 		PORT:           GetEnv("PORT", "8080"),
 		DB_URI:         GetEnvOrPanic("DB_URI"),
-		ALLOWED_ORIGIN: GetEnvPanic("ALLOWED_ORIGIN"),
+		ALLOWED_ORIGIN: GetEnvOrPanic("ALLOWED_ORIGIN"),
 	}, nil
 }
 
