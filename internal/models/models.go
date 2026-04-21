@@ -32,7 +32,7 @@ func NewUser(dto NewUserDto) User {
 		Username:    dto.Username,
 		Email:       dto.Email,
 		AvatarURL:   dto.AvatarURL,
-		AccessToken: dto.AccessToken,
+		AccessToken: dto.AccessToken, // TODO: Encrypt this before storing in DB
 		CreatedAt:   time.Now(),
 		LastLoginAt: time.Now(),
 	}
