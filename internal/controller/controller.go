@@ -8,13 +8,29 @@ import (
 
 type Controller struct {
     Ctx          context.Context
-    production   bool
+    Production   bool
+    GithubOauth  oauth2.Config
+    BaseURL      string
 }
 
-func NewController(ctx context.Context, production bool) *Controller {
+func NewController(
+    ctx context.Context, 
+    production bool, 
+    baseURL string, 
+    githubClientID string, 
+    githubClientSecret string
+) *Controller {
+    githubOauthConfig := config.NewGithubOauthConfig(
+        fmt.Sprintf("%s/auth/callback", baseURL),
+        githubClientID,
+        githubClientSecret,
+    )
+
     return &Controller {
         Ctx: ctx,
-        production: production,
+        Production: production,
+        GithubOauth: githubOauthConfig,
+        BaseURL: baseURL,
     }
 }
 

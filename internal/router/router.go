@@ -13,6 +13,10 @@ func NewRouter(c *controller.Controller) *http.ServeMux {
     // Health Check
     router.HandleFunc("GET /ping", Fn(c.Ping))
 
+    // Auth
+    router.HandleFunc("POST /auth/login", Fn(c.Login))
+    router.HandleFunc("GET /auth/callback", Fn(c.Callback))
+
     return router
 }
 

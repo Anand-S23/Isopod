@@ -12,16 +12,18 @@ type EnvVars struct {
 	PORT           string
 	DB_URI         string
 	ALLOWED_ORIGIN string
+	ENCRYPTION_KEY []byte
 }
 
-func LoadEnv() (*EnvVars, error) {
+func LoadEnv() (EnvVars, error) {
 	envMode := GetEnv("MODE", "development")
 
-	return &EnvVars{
+	return EnvVars{
 		PRODUCTION:     envMode == "production",
 		PORT:           GetEnv("PORT", "8080"),
 		DB_URI:         GetEnvOrPanic("DB_URI"),
 		ALLOWED_ORIGIN: GetEnvOrPanic("ALLOWED_ORIGIN"),
+		ENCRYPTION_KEY: []byte(GetEnvOrPanic("ENCRYPTION_KEY")),
 	}, nil
 }
 
