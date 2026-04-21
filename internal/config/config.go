@@ -8,29 +8,29 @@ import (
 )
 
 type EnvVars struct {
-	PRODUCTION   bool
-	PORT         string
-	DATABASE_URL string
+	PRODUCTION     bool
+	PORT           string
+	DB_URI         string
+	ALLOWED_ORIGIN string
 }
 
 func LoadEnv() (*EnvVars, error) {
 	envMode := GetEnv("MODE", "development")
-	port := GetEnv("PORT", "8080")
-	databaseURL := GetEnvOrPanic("DB_URI")
 
 	return &EnvVars{
-		PRODUCTION:   envMode == "production",
-		PORT:         port,
-		DATABASE_URL: databaseURL,
+		PRODUCTION:     envMode == "production",
+		PORT:           GetEnv("PORT", "8080"),
+		DB_URI:         GetEnvOrPanic("DB_URI"),
+		ALLOWED_ORIGIN: GetEnvPanic("ALLOWED_ORIGIN"),
 	}, nil
 }
 
 func GetEnv(env string, defaultValue string) string {
 	variable := os.Getenv(env)
 	if variable == "" {
-		return defaultValue
+		return strings.TrimSpace(defaultValue)
 	}
-	return variable
+	return strings.TrimSpace(variable)
 }
 
 func GetEnvOrPanic(env string) string {

@@ -79,8 +79,8 @@ func TestLoadEnv(t *testing.T) {
 		if cfg.PORT != "8080" {
 			t.Errorf("Expected default PORT 8080, got %s", cfg.PORT)
 		}
-		if cfg.DATABASE_URL != "postgres://localhost:5432/test" {
-			t.Errorf("DATABASE_URL = %q", cfg.DATABASE_URL)
+		if cfg.DB_URI != "postgres://localhost:5432/test" {
+			t.Errorf("DB_URI = %q", cfg.DB_URI)
 		}
 	})
 
@@ -92,8 +92,8 @@ func TestLoadEnv(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if cfg.DATABASE_URL != "postgres://localhost:5432/app" {
-			t.Errorf("DATABASE_URL = %q", cfg.DATABASE_URL)
+		if cfg.DB_URI != "postgres://localhost:5432/app" {
+			t.Errorf("DB_URI = %q", cfg.DB_URI)
 		}
 	})
 }

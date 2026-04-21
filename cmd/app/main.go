@@ -14,7 +14,8 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
+	err := godotenv.Load()
+	if err != nil {
 		log.Printf("warning: .env not loaded (%v); using existing environment variables only", err)
 	}
 
@@ -27,7 +28,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 	defer cancel()
 
-	db, err := database.InitDB(ctx, env.DATABASE_URL)
+	db, err := database.InitDB(ctx, env.DB_URI)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,7 +36,7 @@ func main() {
 
 	controller := controller.NewController(ctx, env.PRODUCTION)
 	baseRouter := router.NewRouter(controller)
-	router := router.NewCorsRouter(baseRouter, "http://localhost:3000") // TODO: allowedOrigin from env
+	router := router.NewCorsRouter(baseRouter, env.ALLOWED_ORIGIN)
 
 	log.Println("isopod backend running on port: ", env.PORT)
 	log.Fatal(http.ListenAndServe(":"+env.PORT, router))
