@@ -25,14 +25,14 @@ type User struct {
     LastLoginAt time.Time `json:"last_login"`
 }
 
-func NewUser(dto NewUserDto) User {
+func NewUser(dto NewUserDto, encryptionKey []byte) User {
 	return User{
 		ID:          uuid.New().String(),
 		GitHubID:    dto.GitHubID,
 		Username:    dto.Username,
 		Email:       dto.Email,
 		AvatarURL:   dto.AvatarURL,
-		AccessToken: dto.AccessToken, // TODO: Encrypt this before storing in DB
+		AccessToken: crypt.Encrypt(dto.AccessToken, encryptionKey),
 		CreatedAt:   time.Now(),
 		LastLoginAt: time.Now(),
 	}
