@@ -52,6 +52,7 @@ func TestLoadEnv(t *testing.T) {
 	t.Run("Production Mode", func(t *testing.T) {
 		os.Setenv("MODE", "production")
 		os.Setenv("PORT", "443")
+		os.Setenv("DB_URI", "postgres://localhost:5432/test")
 		defer os.Clearenv()
 
 		cfg, _ := LoadEnv()
@@ -67,6 +68,8 @@ func TestLoadEnv(t *testing.T) {
 	t.Run("Development Default", func(t *testing.T) {
 		os.Unsetenv("MODE")
 		os.Unsetenv("PORT")
+		os.Setenv("DB_URI", "postgres://localhost:5432/test")
+		defer os.Unsetenv("DB_URI")
 
 		cfg, _ := LoadEnv()
 
@@ -75,6 +78,22 @@ func TestLoadEnv(t *testing.T) {
 		}
 		if cfg.PORT != "8080" {
 			t.Errorf("Expected default PORT 8080, got %s", cfg.PORT)
+		}
+		if cfg.DATABASE_URL != "postgres://localhost:5432/test" {
+			t.Errorf("DATABASE_URL = %q", cfg.DATABASE_URL)
+		}
+	})
+
+	t.Run("DB_URI from env", func(t *testing.T) {
+		os.Setenv("DB_URI", "postgres://localhost:5432/app")
+		defer os.Unsetenv("DB_URI")
+
+		cfg, err := LoadEnv()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if cfg.DATABASE_URL != "postgres://localhost:5432/app" {
+			t.Errorf("DATABASE_URL = %q", cfg.DATABASE_URL)
 		}
 	})
 }
@@ -100,4 +119,3 @@ func TestGetEnvOrPanic_Fails(t *testing.T) {
 		t.Fatalf("expected exit code 1 from log.Fatal, got %d\noutput:\n%s", code, out)
 	}
 }
-

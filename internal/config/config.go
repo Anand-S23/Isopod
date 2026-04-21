@@ -4,21 +4,25 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 type EnvVars struct {
-    PRODUCTION bool
-    PORT       string
+	PRODUCTION   bool
+	PORT         string
+	DATABASE_URL string
 }
 
 func LoadEnv() (*EnvVars, error) {
-    envMode := GetEnv("MODE", "development")
-    port    := GetEnv("PORT", "8080")
+	envMode := GetEnv("MODE", "development")
+	port := GetEnv("PORT", "8080")
+	databaseURL := GetEnvOrPanic("DB_URI")
 
-    return &EnvVars {
-        PRODUCTION: (envMode == "production"),
-        PORT: port,
-    }, nil
+	return &EnvVars{
+		PRODUCTION:   envMode == "production",
+		PORT:         port,
+		DATABASE_URL: databaseURL,
+	}, nil
 }
 
 func GetEnv(env string, defaultValue string) string {
@@ -32,9 +36,8 @@ func GetEnv(env string, defaultValue string) string {
 func GetEnvOrPanic(env string) string {
 	variable := os.Getenv(env)
 	if variable == "" {
-        message := fmt.Sprintf("must provide %s variable in .env file", env)
-        log.Fatal(message)
+		message := fmt.Sprintf("must provide %s variable in .env file", env)
+		log.Fatal(message)
 	}
-	return variable
-} 
-
+	return strings.TrimSpace(variable)
+}
