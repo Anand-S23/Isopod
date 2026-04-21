@@ -9,11 +9,18 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Anand-S23/isopod/internal/config"
 	"github.com/Anand-S23/isopod/internal/controller"
 )
 
 func TestNewRouter_ping(t *testing.T) {
-	c := controller.NewController(context.Background(), false)
+	env := &config.EnvVars{
+		PRODUCTION:     false,
+		BASE_URL:       "http://localhost:8080",
+		CSRF_TOKEN:     "test_token",
+		ENCRYPTION_KEY: []byte("test_key_123456"),
+	}
+	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)
 
 	rr := httptest.NewRecorder()
@@ -33,7 +40,13 @@ func TestNewRouter_ping(t *testing.T) {
 }
 
 func TestNewRouter_pingMethodNotMatched(t *testing.T) {
-	c := controller.NewController(context.Background(), false)
+	env := &config.EnvVars{
+		PRODUCTION:     false,
+		BASE_URL:       "http://localhost:8080",
+		CSRF_TOKEN:     "test_token",
+		ENCRYPTION_KEY: []byte("test_key_123456"),
+	}
+	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)
 
 	rr := httptest.NewRecorder()
@@ -84,7 +97,13 @@ func TestFn_nilErrorNoExtraWrite(t *testing.T) {
 }
 
 func TestNewCorsRouter_allowedOrigin(t *testing.T) {
-	c := controller.NewController(context.Background(), false)
+	env := &config.EnvVars{
+		PRODUCTION:     false,
+		BASE_URL:       "http://localhost:8080",
+		CSRF_TOKEN:     "test_token",
+		ENCRYPTION_KEY: []byte("test_key_123456"),
+	}
+	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)
 	h := NewCorsRouter(mux, "https://app.example")
 
@@ -102,7 +121,13 @@ func TestNewCorsRouter_allowedOrigin(t *testing.T) {
 }
 
 func TestNewCorsRouter_preflight(t *testing.T) {
-	c := controller.NewController(context.Background(), false)
+	env := &config.EnvVars{
+		PRODUCTION:     false,
+		BASE_URL:       "http://localhost:8080",
+		CSRF_TOKEN:     "test_token",
+		ENCRYPTION_KEY: []byte("test_key_123456"),
+	}
+	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)
 	h := NewCorsRouter(mux, "https://app.example")
 

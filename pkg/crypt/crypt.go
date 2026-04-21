@@ -1,7 +1,5 @@
 package crypt
 
-package security
-
 import (
 	"crypto/aes"
 	"crypto/cipher"

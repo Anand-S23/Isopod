@@ -10,6 +10,7 @@ import (
 	"github.com/Anand-S23/isopod/internal/controller"
 	"github.com/Anand-S23/isopod/internal/database"
 	"github.com/Anand-S23/isopod/internal/router"
+	"github.com/Anand-S23/isopod/internal/store"
 	"github.com/joho/godotenv"
 )
 

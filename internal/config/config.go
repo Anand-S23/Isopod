@@ -8,24 +8,30 @@ import (
 )
 
 type EnvVars struct {
-	PRODUCTION     bool
-	PORT           string
-	DB_URI         string
-	ALLOWED_ORIGIN string
-	ENCRYPTION_KEY []byte
-	CSRF_TOKEN     string
+	PRODUCTION           bool
+	PORT                 string
+	DB_URI               string
+	ALLOWED_ORIGIN       string
+	ENCRYPTION_KEY       []byte
+	CSRF_TOKEN           string
+	BASE_URL             string
+	GITHUB_CLIENT_ID     string
+	GITHUB_CLIENT_SECRET string
 }
 
-func LoadEnv() (EnvVars, error) {
+func LoadEnv() (*EnvVars, error) {
 	envMode := GetEnv("MODE", "development")
 
-	return EnvVars{
-		PRODUCTION:     envMode == "production",
-		PORT:           GetEnv("PORT", "8080"),
-		DB_URI:         GetEnvOrPanic("DB_URI"),
-		ALLOWED_ORIGIN: GetEnvOrPanic("ALLOWED_ORIGIN"),
-		ENCRYPTION_KEY: []byte(GetEnvOrPanic("ENCRYPTION_KEY")),
-		CSRF_TOKEN:     GetEnvOrPanic("CSRF_TOKEN"),
+	return &EnvVars{
+		PRODUCTION:           envMode == "production",
+		PORT:                 GetEnv("PORT", "8080"),
+		DB_URI:               GetEnvOrPanic("DB_URI"),
+		ALLOWED_ORIGIN:       GetEnvOrPanic("ALLOWED_ORIGIN"),
+		ENCRYPTION_KEY:       []byte(GetEnvOrPanic("ENCRYPTION_KEY")),
+		CSRF_TOKEN:           GetEnvOrPanic("CSRF_TOKEN"),
+		BASE_URL:             GetEnvOrPanic("BASE_URL"),
+		GITHUB_CLIENT_ID:     GetEnvOrPanic("GITHUB_CLIENT_ID"),
+		GITHUB_CLIENT_SECRET: GetEnvOrPanic("GITHUB_CLIENT_SECRET"),
 	}, nil
 }
 

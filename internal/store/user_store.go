@@ -2,12 +2,14 @@ package store
 
 import (
 	"github.com/jmoiron/sqlx"
+
+	"github.com/Anand-S23/isopod/internal/models"
 )
 
 type UserRepo interface {
-	UpsertUser(user *User) error
-	GetUserByID(id string) (*User, error)
-	GetUserByEmail(email string) (*User, error)
+	Upsert(user *models.User) error
+	GetByID(id string) (*models.User, error)
+	GetByEmail(email string) (*models.User, error)
 }
 
 type PgUserRepo struct {
@@ -20,14 +22,15 @@ func NewPgUserRepo(db *sqlx.DB) *PgUserRepo {
 	}
 }
 
-func (r *PgUserRepo) UpsertUser(user *User) error {
+func (r *PgUserRepo) Upsert(user *models.User) error {
+
 	return nil
 }
 
-func (r *PgUserRepo) GetUserByID(id string) (*User, error) {
+func (r *PgUserRepo) GetByID(id string) (*models.User, error) {
 	return nil, nil
 }
 
-func (r *PgUserRepo) GetUserByEmail(email string) (*User, error) {
+func (r *PgUserRepo) GetByEmail(email string) (*models.User, error) {
 	return nil, nil
 }
