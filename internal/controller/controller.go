@@ -12,28 +12,27 @@ type Controller struct {
     GithubOauth  oauth2.Config
     BaseURL      string
     CSRFToken    string
+
+    store        *store.Store
 }
 
 func NewController(
+    store *store.Store,
+    env *config.Env,
     ctx context.Context, 
-    production bool, 
-    baseURL string, 
-    githubClientID string, 
-    githubClientSecret string,
-    csrfToken string,
 ) *Controller {
     githubOauthConfig := config.NewGithubOauthConfig(
-        fmt.Sprintf("%s/auth/callback", baseURL),
-        githubClientID,
-        githubClientSecret,
+        fmt.Sprintf("%s/auth/callback", env.BaseURL),
+        env.GithubClientID,
+        env.GithubClientSecret,
     )
 
     return &Controller {
         Ctx: ctx,
-        Production: production,
+        Production: env.Production,
         GithubOauth: githubOauthConfig,
-        BaseURL: baseURL,
-        CSRFToken: csrfToken,
+        BaseURL: env.BaseURL,
+        CSRFToken: env.CSRFToken,
     }
 }
 
@@ -46,4 +45,3 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 func ErrMsg(message string) map[string]string {
     return map[string]string {"error": message}
 }
-

@@ -32,6 +32,10 @@ func (c *Controller) Callback(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	user := models.NewUser(ghUserData, c.EncryptionKey)
-	// TODO: Upsert user in database and create session
+	err = c.store.Users.Create(c.Ctx, user)
+	if err != nil {
+		return ErrMsg("update or create user: %w", err)
+	}
+
 	return nil
 }

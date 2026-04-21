@@ -34,7 +34,8 @@ func main() {
 	}
 	defer db.Close()
 
-	controller := controller.NewController(ctx, env.PRODUCTION)
+	store := store.NewStore(db, store.NewPgUserRepo(db))
+	controller := controller.NewController(store, env, ctx)
 	baseRouter := router.NewRouter(controller)
 	router := router.NewCorsRouter(baseRouter, env.ALLOWED_ORIGIN)
 
