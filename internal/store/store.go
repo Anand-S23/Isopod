@@ -11,7 +11,7 @@ type Store struct {
 
 func NewStore(db *sqlx.DB, ur UserRepo) *Store {
 	return &Store{
-		DB: db,
+		DB:   db,
 		User: ur,
 	}
 }
