@@ -10,9 +10,9 @@ import (
 )
 
 type UserRepo interface {
-	Upsert(user *models.User) error
-	GetByID(id string) (*models.User, error)
-	GetByEmail(email string) (*models.User, error)
+	Upsert(ctx context.Context, user *models.User) error
+	GetByID(ctx context.Context, id string) (*models.User, error)
+	GetByEmail(ctx context.Context, email string) (*models.User, error)
 }
 
 type PgUserRepo struct {
@@ -73,19 +73,15 @@ func (r *PgUserRepo) GetByID(ctx context.Context, id string) (*models.User, erro
 	defer stmt.Close()
 
 	var user models.User
-	err := (
-		stmt.QueryRowContext(
-			ctx, id,
-		).Scan(
-			&user.ID, 
-			&user.GitHubID, 
-			&user.Username, 
-			&user.Email, 
-			&user.AvatarURL, 
-			&user.AccessToken, 
-			&user.CreatedAt, 
-			&user.LastLoginAt,
-		)
+	err = stmt.QueryRowContext(ctx, id).Scan(
+		&user.ID,
+		&user.GitHubID,
+		&user.Username,
+		&user.Email,
+		&user.AvatarURL,
+		&user.AccessToken,
+		&user.CreatedAt,
+		&user.LastLoginAt,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("execute get by id statement: %w", err)
@@ -96,9 +92,8 @@ func (r *PgUserRepo) GetByID(ctx context.Context, id string) (*models.User, erro
 
 func (r *PgUserRepo) GetByEmail(ctx context.Context, email string) (*models.User, error) {
 	stmt, err := r.DB.PrepareContext(
-		ctx, 
-		`SELECT id, github_id, username, email, avatar_url, access_token, created_at, last_login_at 
-		FROM users WHERE email = ?`
+		ctx,
+		`SELECT id, github_id, username, email, avatar_url, access_token, created_at, last_login_at FROM users WHERE email = ?`,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("prepare get by email statement: %w", err)
@@ -106,19 +101,15 @@ func (r *PgUserRepo) GetByEmail(ctx context.Context, email string) (*models.User
 	defer stmt.Close()
 
 	var user models.User
-	err := (
-		stmt.QueryRowContext(
-			ctx, email
-		).Scan(
-			&user.ID, 
-			&user.GitHubID, 
-			&user.Username, 
-			&user.Email, 
-			&user.AvatarURL, 
-			&user.AccessToken, 
-			&user.CreatedAt, 
-			&user.LastLoginAt,
-		)
+	err = stmt.QueryRowContext(ctx, email).Scan(
+		&user.ID,
+		&user.GitHubID,
+		&user.Username,
+		&user.Email,
+		&user.AvatarURL,
+		&user.AccessToken,
+		&user.CreatedAt,
+		&user.LastLoginAt,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("execute get by email statement: %w", err)

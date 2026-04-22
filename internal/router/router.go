@@ -8,36 +8,36 @@ import (
 )
 
 func NewRouter(c *controller.Controller) *http.ServeMux {
-    router := http.NewServeMux()
+	router := http.NewServeMux()
 
-    // Health Check
-    router.HandleFunc("GET /ping", Fn(c.Ping))
+	// Health Check
+	router.HandleFunc("GET /ping", Fn(c.Ping))
 
-    // Auth
-    router.HandleFunc("POST /auth/login", Fn(c.Login))
-    router.HandleFunc("GET /auth/callback", Fn(c.Callback))
+	// Auth
+	router.HandleFunc("POST /auth/login", Fn(c.Login))
+	router.HandleFunc("GET /auth/callback", Fn(c.Callback))
 
-    return router
+	return router
 }
 
 func NewCorsRouter(router *http.ServeMux, allowedOrigin string) http.Handler {
-    corsHandler := handlers.CORS(
-        handlers.AllowedOrigins([]string{"http://localhost:3000", allowedOrigin}),
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"http://localhost:3000", allowedOrigin}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
 		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 		handlers.AllowCredentials(),
 	)
 
-    return corsHandler(router)
+	return corsHandler(router)
 }
 
 type apiFunc func(http.ResponseWriter, *http.Request) error
 
 func Fn(fn apiFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        err := fn(w, r)
-        if err != nil {
-            controller.WriteJSON(w, http.StatusInternalServerError, controller.ErrMsg(err.Error()))
-        }
-    }
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := fn(w, r)
+		if err != nil {
+			controller.WriteJSON(w, http.StatusInternalServerError, controller.ErrMsg(err.Error()))
+		}
+	}
 }

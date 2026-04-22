@@ -1,12 +1,17 @@
+# If you change POSTGRES_PASSWORD after the first `up`, remove the volume or auth will fail:
+#   docker compose down -v && docker compose up -d
+# If something else already uses port 5432 (e.g. host PostgreSQL), map a different host port
+# (e.g. "127.0.0.1:5433:5432") and set DB_URI to that port.
 services:
   postgres:
     image: postgres:16-alpine
     container_name: isopod-postgres
     restart: unless-stopped
+    env_file: .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: isopod
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:

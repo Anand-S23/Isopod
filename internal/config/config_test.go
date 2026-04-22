@@ -5,7 +5,44 @@ import (
 	"os"
 	"os/exec"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
+
+func TestMain(m *testing.M) {
+	_ = godotenv.Load("../../.env")
+	os.Exit(m.Run())
+}
+
+func setLoadEnvTestVars() (cleanup func()) {
+	keys := []struct{ k, v string }{
+		{"DB_URI", "postgres://127.0.0.1:5432/test"},
+		{"ENCRYPTION_KEY", "test-encryption-key-32-bytes!!"},
+		{"CSRF_TOKEN", "test_csrf"},
+		{"BASE_URL", "http://localhost:8080"},
+		{"GITHUB_CLIENT_ID", "gh_test_id"},
+		{"GITHUB_CLIENT_SECRET", "gh_test_secret"},
+		{"ALLOWED_ORIGIN", "http://localhost:3000"},
+	}
+	prev := make(map[string]string, len(keys))
+	seen := make(map[string]bool, len(keys))
+	for _, item := range keys {
+		if v, ok := os.LookupEnv(item.k); ok {
+			prev[item.k] = v
+			seen[item.k] = true
+		}
+		os.Setenv(item.k, item.v)
+	}
+	return func() {
+		for _, item := range keys {
+			if seen[item.k] {
+				os.Setenv(item.k, prev[item.k])
+			} else {
+				os.Unsetenv(item.k)
+			}
+		}
+	}
+}
 
 func TestGetEnv(t *testing.T) {
 	tests := []struct {
@@ -50,12 +87,16 @@ func TestGetEnv(t *testing.T) {
 
 func TestLoadEnv(t *testing.T) {
 	t.Run("Production Mode", func(t *testing.T) {
-		os.Setenv("MODE", "production")
-		os.Setenv("PORT", "443")
-		os.Setenv("DB_URI", "postgres://localhost:5432/test")
-		defer os.Clearenv()
+		cleanup := setLoadEnvTestVars()
+		defer cleanup()
+		t.Setenv("MODE", "production")
+		t.Setenv("PORT", "443")
+		t.Setenv("DB_URI", "postgres://127.0.0.1:5432/test")
 
-		cfg, _ := LoadEnv()
+		cfg, err := LoadEnv()
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		if !cfg.PRODUCTION {
 			t.Error("Expected PRODUCTION to be true")
@@ -66,12 +107,29 @@ func TestLoadEnv(t *testing.T) {
 	})
 
 	t.Run("Development Default", func(t *testing.T) {
+		cleanup := setLoadEnvTestVars()
+		defer cleanup()
+		prevMode, hadMode := os.LookupEnv("MODE")
+		prevPort, hadPort := os.LookupEnv("PORT")
 		os.Unsetenv("MODE")
 		os.Unsetenv("PORT")
-		os.Setenv("DB_URI", "postgres://localhost:5432/test")
-		defer os.Unsetenv("DB_URI")
+		t.Cleanup(func() {
+			if hadMode {
+				os.Setenv("MODE", prevMode)
+			} else {
+				os.Unsetenv("MODE")
+			}
+			if hadPort {
+				os.Setenv("PORT", prevPort)
+			} else {
+				os.Unsetenv("PORT")
+			}
+		})
 
-		cfg, _ := LoadEnv()
+		cfg, err := LoadEnv()
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		if cfg.PRODUCTION {
 			t.Error("Expected PRODUCTION to be false")
@@ -79,20 +137,21 @@ func TestLoadEnv(t *testing.T) {
 		if cfg.PORT != "8080" {
 			t.Errorf("Expected default PORT 8080, got %s", cfg.PORT)
 		}
-		if cfg.DB_URI != "postgres://localhost:5432/test" {
+		if cfg.DB_URI != "postgres://127.0.0.1:5432/test" {
 			t.Errorf("DB_URI = %q", cfg.DB_URI)
 		}
 	})
 
 	t.Run("DB_URI from env", func(t *testing.T) {
-		os.Setenv("DB_URI", "postgres://localhost:5432/app")
-		defer os.Unsetenv("DB_URI")
+		cleanup := setLoadEnvTestVars()
+		defer cleanup()
+		os.Setenv("DB_URI", "postgres://127.0.0.1:5432/app")
 
 		cfg, err := LoadEnv()
 		if err != nil {
 			t.Fatal(err)
 		}
-		if cfg.DB_URI != "postgres://localhost:5432/app" {
+		if cfg.DB_URI != "postgres://127.0.0.1:5432/app" {
 			t.Errorf("DB_URI = %q", cfg.DB_URI)
 		}
 	})

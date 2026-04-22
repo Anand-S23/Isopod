@@ -48,7 +48,7 @@ func (c *Controller) Callback(w http.ResponseWriter, r *http.Request) error {
 		return WriteJSON(w, http.StatusBadRequest, ErrMsg(errMsg))
 	}
 
-	err = c.store.User.Upsert(&user)
+	err = c.store.User.Upsert(c.Ctx, &user)
 	if err != nil {
 		errMsg := fmt.Sprintf("update or create user: %s", err.Error())
 		return WriteJSON(w, http.StatusBadRequest, ErrMsg(errMsg))
