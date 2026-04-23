@@ -19,6 +19,7 @@ func TestNewRouter_ping(t *testing.T) {
 		BASE_URL:       "http://localhost:8080",
 		CSRF_TOKEN:     "test_token",
 		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
 	}
 	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)
@@ -45,6 +46,7 @@ func TestNewRouter_pingMethodNotMatched(t *testing.T) {
 		BASE_URL:       "http://localhost:8080",
 		CSRF_TOKEN:     "test_token",
 		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
 	}
 	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)
@@ -102,6 +104,7 @@ func TestNewCorsRouter_allowedOrigin(t *testing.T) {
 		BASE_URL:       "http://localhost:8080",
 		CSRF_TOKEN:     "test_token",
 		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
 	}
 	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)
@@ -126,6 +129,7 @@ func TestNewCorsRouter_preflight(t *testing.T) {
 		BASE_URL:       "http://localhost:8080",
 		CSRF_TOKEN:     "test_token",
 		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
 	}
 	c := controller.NewController(nil, env, context.Background())
 	mux := NewRouter(c)

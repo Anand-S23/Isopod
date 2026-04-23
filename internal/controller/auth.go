@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -54,5 +56,50 @@ func (c *Controller) Callback(w http.ResponseWriter, r *http.Request) error {
 		return WriteJSON(w, http.StatusBadRequest, ErrMsg(errMsg))
 	}
 
+	sess, err := c.getSession(r)
+	if err != nil {
+		return fmt.Errorf("get session: %w", err)
+	}
+	sess.Values[sessionValueUserID] = user.ID
+	if err := sess.Save(r, w); err != nil {
+		return fmt.Errorf("save session: %w", err)
+	}
+	http.Redirect(w, r, c.AllowedOrigin, http.StatusFound)
 	return nil
+}
+
+func (c *Controller) Me(w http.ResponseWriter, r *http.Request) error {
+	id, ok := c.currentUserID(r)
+	if !ok {
+		return WriteJSON(w, http.StatusUnauthorized, ErrMsg("not authenticated"))
+	}
+	u, err := c.store.User.GetByID(c.Ctx, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return WriteJSON(w, http.StatusUnauthorized, ErrMsg("not authenticated"))
+		}
+		return WriteJSON(w, http.StatusInternalServerError, ErrMsg("load user"))
+	}
+	return WriteJSON(w, http.StatusOK, map[string]any{
+		"id":            u.ID,
+		"github_id":     u.GitHubID,
+		"username":      u.Username,
+		"email":         u.Email,
+		"avatar_url":    u.AvatarURL,
+		"created_at":    u.CreatedAt,
+		"last_login_at": u.LastLoginAt,
+	})
+}
+
+func (c *Controller) Logout(w http.ResponseWriter, r *http.Request) error {
+	sess, err := c.getSession(r)
+	if err != nil {
+		return fmt.Errorf("get session: %w", err)
+	}
+	sess.Options.MaxAge = -1
+	sess.Values = make(map[interface{}]interface{})
+	if err := sess.Save(r, w); err != nil {
+		return fmt.Errorf("save session: %w", err)
+	}
+	return WriteJSON(w, http.StatusOK, map[string]any{"ok": true})
 }

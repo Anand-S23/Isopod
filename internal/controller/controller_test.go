@@ -20,9 +20,16 @@ func TestNewController(t *testing.T) {
 		BASE_URL:       "http://localhost:8080",
 		CSRF_TOKEN:     "test_token",
 		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
 	}
 
 	c := NewController(nil, env, ctx)
+	if c.SessionStore == nil {
+		t.Fatal("expected SessionStore to be set")
+	}
+	if c.SessionStore.Options == nil {
+		t.Error("expected cookie options")
+	}
 	if c.Ctx != ctx {
 		t.Error("expected Ctx to be the passed context")
 	}
@@ -35,6 +42,7 @@ func TestNewController(t *testing.T) {
 		BASE_URL:       "http://localhost:8080",
 		CSRF_TOKEN:     "test_token",
 		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
 	}
 
 	c2 := NewController(nil, env2, context.Background())
@@ -80,6 +88,7 @@ func TestController_Ping(t *testing.T) {
 		BASE_URL:       "http://localhost:8080",
 		CSRF_TOKEN:     "test_token",
 		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
 	}
 	c := NewController(nil, env, context.Background())
 	rr := httptest.NewRecorder()

@@ -20,10 +20,7 @@ func main() {
 		log.Printf("warning: .env not loaded (%v); using existing environment variables only", err)
 	}
 
-	env, err := config.LoadEnv()
-	if err != nil {
-		log.Fatal(err)
-	}
+	env := config.LoadEnv()
 
 	ctxTimeout := 5 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)

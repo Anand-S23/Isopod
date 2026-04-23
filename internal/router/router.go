@@ -16,6 +16,8 @@ func NewRouter(c *controller.Controller) *http.ServeMux {
 	// Auth
 	router.HandleFunc("POST /auth/login", Fn(c.Login))
 	router.HandleFunc("GET /auth/callback", Fn(c.Callback))
+	router.HandleFunc("GET /auth/me", Fn(c.Me))
+	router.HandleFunc("POST /auth/logout", Fn(c.Logout))
 
 	return router
 }

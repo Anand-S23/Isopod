@@ -8,6 +8,7 @@ import (
 
 	"github.com/Anand-S23/isopod/internal/config"
 	"github.com/Anand-S23/isopod/internal/store"
+	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 )
 
@@ -16,8 +17,10 @@ type Controller struct {
 	Production    bool
 	GithubOauth   oauth2.Config
 	BaseURL       string
+	AllowedOrigin string
 	CSRFToken     string
 	EncryptionKey []byte
+	SessionStore  *sessions.CookieStore
 
 	store *store.Store
 }
@@ -33,13 +36,25 @@ func NewController(
 		env.GITHUB_CLIENT_SECRET,
 	)
 
+	cookieStore := sessions.NewCookieStore(env.SESSION_KEY, env.SESSION_KEY)
+	cookieStore.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7, // 7 days
+		HttpOnly: true,
+		Secure:   env.PRODUCTION,
+		SameSite: http.SameSiteLaxMode,
+	}
+
 	return &Controller{
 		Ctx:           ctx,
 		Production:    env.PRODUCTION,
 		GithubOauth:   githubOauthConfig,
 		BaseURL:       env.BASE_URL,
+		AllowedOrigin: env.ALLOWED_ORIGIN,
 		CSRFToken:     env.CSRF_TOKEN,
 		EncryptionKey: env.ENCRYPTION_KEY,
+		SessionStore:  cookieStore,
+		store:         store,
 	}
 }
 

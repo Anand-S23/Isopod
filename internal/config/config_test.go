@@ -18,6 +18,7 @@ func setLoadEnvTestVars() (cleanup func()) {
 	keys := []struct{ k, v string }{
 		{"DB_URI", "postgres://127.0.0.1:5432/test"},
 		{"ENCRYPTION_KEY", "test-encryption-key-32-bytes!!"},
+		{"SESSION_KEY", "test-session-signing-key-32bytes!"},
 		{"CSRF_TOKEN", "test_csrf"},
 		{"BASE_URL", "http://localhost:8080"},
 		{"GITHUB_CLIENT_ID", "gh_test_id"},
@@ -93,10 +94,7 @@ func TestLoadEnv(t *testing.T) {
 		t.Setenv("PORT", "443")
 		t.Setenv("DB_URI", "postgres://127.0.0.1:5432/test")
 
-		cfg, err := LoadEnv()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cfg := LoadEnv()
 
 		if !cfg.PRODUCTION {
 			t.Error("Expected PRODUCTION to be true")
@@ -126,10 +124,7 @@ func TestLoadEnv(t *testing.T) {
 			}
 		})
 
-		cfg, err := LoadEnv()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cfg := LoadEnv()
 
 		if cfg.PRODUCTION {
 			t.Error("Expected PRODUCTION to be false")
@@ -147,10 +142,7 @@ func TestLoadEnv(t *testing.T) {
 		defer cleanup()
 		os.Setenv("DB_URI", "postgres://127.0.0.1:5432/app")
 
-		cfg, err := LoadEnv()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cfg := LoadEnv()
 		if cfg.DB_URI != "postgres://127.0.0.1:5432/app" {
 			t.Errorf("DB_URI = %q", cfg.DB_URI)
 		}
