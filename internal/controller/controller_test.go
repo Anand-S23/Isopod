@@ -7,22 +7,46 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/Anand-S23/isopod/internal/config"
 )
 
 func TestNewController(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	c := NewController(ctx, true)
+	env := &config.EnvVars{
+		PRODUCTION:     true,
+		BASE_URL:       "http://localhost:8080",
+		CSRF_TOKEN:     "test_token",
+		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
+	}
+
+	c := NewController(nil, env, ctx)
+	if c.SessionStore == nil {
+		t.Fatal("expected SessionStore to be set")
+	}
+	if c.SessionStore.Options == nil {
+		t.Error("expected cookie options")
+	}
 	if c.Ctx != ctx {
 		t.Error("expected Ctx to be the passed context")
 	}
-	if !c.production {
+	if !c.Production {
 		t.Error("expected production true")
 	}
 
-	c2 := NewController(context.Background(), false)
-	if c2.production {
+	env2 := &config.EnvVars{
+		PRODUCTION:     false,
+		BASE_URL:       "http://localhost:8080",
+		CSRF_TOKEN:     "test_token",
+		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
+	}
+
+	c2 := NewController(nil, env2, context.Background())
+	if c2.Production {
 		t.Error("expected production false")
 	}
 }
@@ -59,7 +83,14 @@ func TestErrMsg(t *testing.T) {
 }
 
 func TestController_Ping(t *testing.T) {
-	c := NewController(context.Background(), false)
+	env := &config.EnvVars{
+		PRODUCTION:     false,
+		BASE_URL:       "http://localhost:8080",
+		CSRF_TOKEN:     "test_token",
+		ENCRYPTION_KEY: []byte("test_key_123456"),
+		SESSION_KEY:    []byte("test-session-signing-key-32bytes!"),
+	}
+	c := NewController(nil, env, context.Background())
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/ping", nil)
 
@@ -83,4 +114,3 @@ func TestController_Ping(t *testing.T) {
 		t.Errorf("body = %q, want Pong", body)
 	}
 }
-

@@ -5,6 +5,5 @@ import (
 )
 
 func (c *Controller) Ping(w http.ResponseWriter, r *http.Request) error {
-    return WriteJSON(w, http.StatusOK, "Pong")
+	return WriteJSON(w, http.StatusOK, "Pong")
 }
-
